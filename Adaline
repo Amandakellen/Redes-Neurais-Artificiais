@@ -1,94 +1,123 @@
-#Adaline
-yadaline<-function(w,x)
+#função de Treinamento
+treina_adaline<-function(x,y,b,alfa,maxepoca,tol)
 {
-  
-  y<-x%*%w
-  return(y)
-}
-treina_adaline<-function(xin,yd,eta,tol,maxepocas,par)
-{
-  dimx<-dim(xin)#tamanho de xin
-  N<-dimx[1]#linhas
-  n<-dimx[2]#colunas
-  if(par==1){
-    wt<-as.matrix(runif(n+1)-0.5)#gera numeros aleatorios,se for 2 valores vem pra ca
-    xin<-cbind(1,xin)
-  }
-  else wt<-as.matrix(runif(n)-0.5)
-  nepocas<-0
-  eepoca<-tol+1
-  evec<-matrix(nrow=1,ncol=maxepocas)
-  while((nepocas< maxepocas)&&(eepoca  >tol))
+  N<-dim(x);
+  seq<-tol+1
+  epoca<-1
+  w1<-0.02
+  w2<-0.02
+  w3<-0.02
+  w4<-0.02
+  #maxepoca =numero de iterações
+  evec<-matrix(nrow=maxepoca,ncol=1)
+  while((epoca <=maxepoca)&&(seq>=tol))
   {
-    ei2<-0
-    xseq<-sample(N)#sample obtém uma amostra do tamanho especificado dos elementos de x usando com ou sem substituição.
     for(i in 1:N)#encontrando novos w
     {
-      irand<-xseq[i]
-      yhati<-1.0*((xin[irand,]%*% wt))
-      ei<-yd[irand]-yhati#erro yesperado - y encontrado
-      dw<-eta*ei*xin[irand,]#ne*xi 
-      wt<-wt+dw #novo peso calculado 
-      ei2<-ei2+ei*ei#soma dos erros encontrados equivalente no scilab b=b+ alfae
+      #novo Y
+      yi<-x[i,1]*w1+x[i,2]*w2+x[i,3]*w3+x[i,4]*w4+b
+      dif<-y[i,1]-yi
+      
+      #novo peso
+      w1<-w1+alfa*dif*x[i,1]
+      w2<-w2+alfa*dif*x[i,2]
+      w3<-w3+alfa*dif*x[i,3]
+      w4<-w4+alfa*dif*x[i,4]
+      b=b+dif*alfa
       
     }
-    nepocas<-nepocas+1#nepoca= numero de iterações
-    evec[nepocas]<-ei2/N #erro quadráico médio
-    eepoca<-evec[nepocas]#erro atual
+    seq=(b/N)
     
+    
+    evec[epoca]<-seq#erro atual
+    epoca=epoca+1#nepoca= numero de iterações
   }
-  retlist<-list(wt,evec[1:nepocas])
+  w<-c(w1,w2,w3,w4,b)
+  w<-matrix(data=w,nrow=5,ncol=1)
+  retlist<-list(w,evec[1:epoca])
   return(retlist)
-   
+  
 }
 
 library(ggplot2)
-library(reshape2)
-
-
 
 #Declaração de todos os dados
-tempo_total<-c(0.3,0.6,0.9,1.2,1.5,1.8,2.1,2.4,2.7,3,3.3,3.6,3.9,4.2,4.5,4.8,5.1,5.4,5.7,6)
+#x1
+x1_total<-c( 0.425950531568867,0.81020605733591,1.11515296917338,1.31094093866055,1.37840487520902,1.31094093866055,1.11515296917338,0.81020605733591,0.425950531568867,1.7725769469902e-16,-0.425950531568866,-0.81020605733591,-1.11515296917338,-1.37840487520902,-1.37840487520902,-1.31094093866055,-1.11515296917338,-0.81020605733591,-0.425950531568867,-3.2916004080713e-16 )
+x1_total<-matrix(data=x1_total,nrow=20,ncol=1)
+
+#x2
+x2_total<-c(1.31094093866055,1.11515296917338,0.81020605733591,0.425950531568867,1.38756813824575e-16,-0.425950531568866,-0.81020605733591,-1.11515296917338,-1.31094093866055,-1.37840487520902, -1.31094093866055,-1.11515296917338,-0.81020605733591,-0.425950531568867,-1.98855009846192e-16,0.425950531568866, 0.81020605733591,1.11515296917338,1.31094093866055,1.37840487520902)
+x2_total<-tempo_total<-matrix(data=x2_total,nrow=20,ncol=1)
+
+#x3
+x3_total<-c(-1.60579308398418,-1.43676223303848,-1.26773138209277,-1.09870053114707,-0.929669680201368,-0.760638829255665,-0.591607978309962,-0.422577127364258,-0.253546276418555,-0.0845154254728517,0.0845154254728517,0.253546276418555,0.422577127364258,0.591607978309962,0.760638829255665,0.929669680201368,1.09870053114707,1.26773138209277,1.43676223303848,1.60579308398418)
+x3_total<-matrix(data=x3_total,nrow=20,ncol=1)
+
+#tempo
+tempo_total<-c(0.314159265358979,0.628318530717959,0.942477796076938,1.25663706143592,1.5707963267949,1.88495559215388,2.19911485751286,2.51327412287183,2.82743338823081,3.14159265358979,3.45575191894877,3.76991118430775,4.08407044966673,4.39822971502571,4.71238898038469,5.02654824574367,5.34070751110265,5.65486677646163,5.96902604182061,6.28318530717959)
 tempo_total<-matrix(data=tempo_total,nrow=20,ncol=1)
-x_total<-c(0.29552020666134,0.564642473395035,0.783326909627483,0.932039085967226,0.997494986604054,0.973847630878195,0.863209366648874,0.675463180551151,0.42737988023383,0.141120008059868,-0.157745694143248,-0.442520443294852,-0.687766159183973,-0.871575772413588,-0.977530117665097,-0.996164608835841,-0.925814682327732,-0.772764487555988,-0.550685542597638,-0.279415498198926)
-x_total<-matrix(data=x_total,nrow=20,ncol=1)
-y_total<-c(0.588656061998402,0.669392742018511,0.734998072888245,0.779611725790168,0.799248495981216,0.792154289263459,0.758962809994662,0.702638954165345,0.628213964070149,0.54233600241796,0.452676291757026,0.367243867011544,0.293670152244808,0.238527268275924,0.206740964700471,0.201150617349248,0.22225559530168,0.268170653733204,0.334794337220709, 0.416175350540322)
+
+#y
+y_total<-c(-0.198750516267684,0.301021623362128,0.503167264361769,0.437536735151964,0.160192161399815,-0.252080285449282,-0.70928675363343,-1.11703493630872,-1.385773848213,-1.4395597000417,-1.22348980567651,-0.709076839632104,0.102962625042473,1.1827782599265,2.47430793935287,3.90076549187618,5.37215706573455,6.79409035408407,8.07701437166256,9.14498532916549)
 y_total<-matrix(data=y_total,nrow=20,ncol=1)
 
 #plotagem das entradas e sáidas
-dados<-data.frame(X= c(x_total),Y=c(y_total),t=c(tempo_total),stringsAsFactors = FALSE)
-ggplot(dados)+geom_point(aes(x =tempo_total, y =x_total),col='red',)+geom_point(aes(x =tempo_total, y =aux_y),col='blue')+geom_line(aes(x =tempo_total, y =x_total,color="Entrada"))+geom_line(aes(x =tempo_total, y =aux_y,color="Saida"))+theme(legend.position=c(0.1, 0.1))
+#x1
+dados<-data.frame(X1= c(x1_total),t=c(tempo_total),stringsAsFactors = FALSE)
+ggplot(dados)+geom_point(aes(x =tempo_total, y =x1_total),col='red')+geom_line(aes(x =tempo_total, y =x1_total),col='red')
+
+#x2
+dados<-data.frame(X1= c(x2_total),t=c(tempo_total),stringsAsFactors = FALSE)
+ggplot(dados)+geom_point(aes(x =tempo_total, y =x2_total),col='blue')+geom_line(aes(x =tempo_total, y =x2_total),col='blue')
+
+#x3
+dados<-data.frame(X1= c(x3_total),t=c(tempo_total),stringsAsFactors = FALSE)
+ggplot(dados)+geom_point(aes(x =tempo_total, y =x3_total),col='green')+geom_line(aes(x =tempo_total, y =x3_total),col='green')
+
+#y
+dados<-data.frame(X1= c(y_total),t=c(tempo_total),stringsAsFactors = FALSE)
+ggplot(dados)+geom_point(aes(x =tempo_total, y =y_total),col='purple')+geom_line(aes(x =tempo_total, y =y_total),col='purple')
 
 
 #Treinamento dos Dados:
-treino_tempo<-c(0.3,0.6,0.9,1.2,1.5,1.8,2.1,2.4,2.7,3,3.3,3.6,3.9,4.2)
-treino_tempo<-matrix(data=treino_tempo,nrow=14,ncol=1)
+#tempo
+treino_tempo<-c(0.314159265358979,0.628318530717959,0.942477796076938,1.25663706143592,1.5707963267949,1.88495559215388,2.19911485751286,2.51327412287183,2.82743338823081,3.14159265358979,3.45575191894877,3.76991118430775,4.08407044966673,4.39822971502571)
 
-treino_y<-c(0.588656061998402,0.669392742018511,0.734998072888245,0.779611725790168,0.799248495981216,0.792154289263459,0.758962809994662,0.702638954165345,0.628213964070149,0.54233600241796,0.452676291757026,0.367243867011544,0.293670152244808,0.238527268275924)
-treino_y<-matrix(data=treino_y,nrow=14,ncol=1)  
+#x1
+treino_x1<-c(0.425950531568867,0.81020605733591,1.11515296917338,1.31094093866055,1.37840487520902,1.31094093866055,1.11515296917338,0.81020605733591,0.425950531568867,1.7725769469902e-16,-0.425950531568866,-0.81020605733591,-1.11515296917338,-1.37840487520902)
 
-treino_x<-c( 0.29552020666134,0.564642473395035,0.783326909627483,0.932039085967226,0.997494986604054,0.973847630878195,0.863209366648874,0.675463180551151,0.42737988023383,0.141120008059868,-0.157745694143248,-0.442520443294852,-0.687766159183973,-0.871575772413588)
+#x2
+treino_x2<-c(1.31094093866055,1.11515296917338,0.81020605733591,0.425950531568867,1.38756813824575e-16,-0.425950531568866,-0.81020605733591,-1.11515296917338,-1.31094093866055,-1.37840487520902, -1.31094093866055,-1.11515296917338,-0.81020605733591,-0.425950531568867)
+
+#x3
+treino_x3<-c(-1.60579308398418,-1.43676223303848,-1.26773138209277,-1.09870053114707,-0.929669680201368,-0.760638829255665,-0.591607978309962,-0.422577127364258,-0.253546276418555,-0.0845154254728517,0.0845154254728517,0.253546276418555,0.422577127364258,0.591607978309962)
+
+#y
+treino_y<-c(-0.198750516267684,0.301021623362128,0.503167264361769,0.437536735151964,0.160192161399815,-0.252080285449282,-0.70928675363343,-1.11703493630872,-1.385773848213,-1.4395597000417,-1.22348980567651,-0.709076839632104,0.102962625042473,1.1827782599265)
+treino_y<-matrix(data=treino_y,nrow=14,ncol=1)
+
 valorb<-c(1,1,1,1,1,1,1,1,1,1,1,1,1,1)
-#treino_x<-c(treino_x,treino_tempo,valorb)
-treino_x<-matrix(data=treino_x,nrow=14,ncol=1)  
 
-tol=0.0001
-eta<-0.1
-maxepocas<-100
-par<-1
-
-result1 <- treina_adaline(treino_x, treino_y,eta,tol,maxepocas,par)
+xtreino<-c(treino_tempo,treino_x1,treino_x2,treino_x3,valorb)
+xtreino<-matrix(data=xtreino,nrow=14,ncol=5)
+tol=0.001
+bias=1
+alfa<-0.1
+result1 <- treina_adaline(xtreino,treino_y,bias,alfa,100,tol)
 erros<-result1[2]
-w<-result1[1]
-b2<-c(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
-w2<-matrix(unlist(w),nrow=2,ncol=1)
-teste_entrada<-c(treino_tempo,b2)
-teste_entrada<-matrix(data=teste_entrada,nrow=20,ncol=2)
-y_encontrado<-teste_entrada%*%w2
-y_encontrado<-matrix(data=y_encontrado,nrow=20,ncol=1)
-dados2<-data.frame(X= c(tempo_total),Y=c(y_encontrado),t=c(y_total),stringsAsFactors = FALSE)
-ggplot(dados)+geom_point(aes(x =tempo_total, y =aux_y),col='blue')+geom_line(aes(x =tempo_total, y =aux_y,color="Original"))+geom_line(aes(x =tempo_total, y =y_encontrado,color="Previsto"))+theme(legend.position=c(0.1, 0.1))
+w<-result1
+w2<-matrix(unlist(w),nrow=5,ncol=1)
+erros2<-matrix(unlist(erros))
 
+b2<-c(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
+
+teste_entrada<-c(tempo_total,x1_total,x2_total,x3_total,b2)
+teste_entrada<-matrix(data=teste_entrada,nrow=20,ncol=5)
+y_encontrado<-teste_entrada%*%w2
+
+dados<-data.frame(t=c(tempo_total),y=c(y_total),y1=c(y_encontrado),stringsAsFactors = FALSE)
+ggplot(dados)+geom_point(aes(x =tempo_total, y =y_total),col='blue')+geom_point(aes(x =tempo_total, y =y_encontrado),col='red')+geom_line(aes(x =tempo_total, y =y_total,color="original"))+geom_line(aes(x =tempo_total, y =y_encontrado,color="Encontrado"))+theme(legend.position=c(0.1, 0.1))
 
 
 
