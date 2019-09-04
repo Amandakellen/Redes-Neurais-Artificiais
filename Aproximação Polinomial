@@ -1,0 +1,178 @@
+#Gerando os pontos
+rm(list=ls())
+Namostras = 100
+x<-runif(n = Namostras,min = -15,max = 10)#Essas funções fornecem informações sobre a distribuição uniforme no intervalo de min a max.runif gera desvios aleatórios.
+y<-(1/2)*x^2+3*x+10+rnorm(length(x),0,4)
+sort(x)
+sort(y)
+dados<-data.frame(X= c(x),Y=c(y),stringsAsFactors = FALSE)
+
+#segundo valor 
+n2=100
+x_2<-runif(n2, min = -15,max = 10)
+y_2<-(1/2)*x_2^2+3*x_2+10+rnorm(length(x_2),0,4)
+sort(x_2)
+sort(y_2)
+
+#Polinômio de Grau 1
+#Gerando os Dadod
+aux=c(x,x^0)
+library(corpcor)
+H=matrix(data=aux,nrow=Namostras,ncol=2)
+h_inversa<-pseudoinverse(H)
+ymatriz<-matrix(data=y,nrow=Namostras,ncol=1)
+multi<-h_inversa %*% ymatriz
+w=matrix(data=multi,nrow=n2,ncol=1)
+yp<-(w[1,1]*x+w[2,1]*x^0)
+#Plotando o Gráfico
+model1 = lm (yp ~ x)
+model1 $ ajuste
+model1 $ coeff
+model2 = lm(yp~x+I(x^2))
+coeff <- round(model1$coefficients , 2)
+library (ggplot2)
+ggplot(dados)+geom_point(aes(x =x, y =y),col='red')+geom_line(aes (x =x, y = model1 $ fit),col='blue') +ggtitle("P(x)=0.29x + 31.63") 
+
+
+
+#Polinômio de grau 2
+#Gerando a função
+aux=c(x^2,x,x^0)
+library(corpcor)
+H=matrix(data=aux,nrow=Namostras,ncol=3)
+h_inversa<-pseudoinverse(H)
+ymatriz<-c(y)
+multi<-h_inversa %*% ymatriz
+w=c(multi)
+w2<-matrix(w)
+yp<-(w2[1,1]*x^2+w2[2,1]*x+w2[3,1]*x^0)
+#Plotando o Gráfico
+model1 = lm(yp~x+I(x^2))
+model1 $ ajuste
+model1 $ coeff
+show(model1 $ coeff)
+library (ggplot2)
+ggplot(dados)+geom_point(aes(x =x, y =y),col='red')+geom_line(aes (x =x, y = model1 $ fit),col='blue') +ggtitle("P(x)=0.49x^2 + 2.94x + 10.83") 
+
+
+#Polinômio de grau 3
+#Gerando a função
+aux=c(x^3,x^2,x,x^0)
+library(corpcor)
+H=matrix(data=aux,nrow=Namostras,ncol=4)
+h_inversa<-pseudoinverse(H)
+ymatriz<-c(y)
+multi<-h_inversa %*% ymatriz
+w=c(multi)
+w2<-matrix(w)
+yp<-(w2[1,1]*x^3+w2[2,1]*x^2+w2[3,1]*x+w2[4,1]*x^0)
+#plotando o gráfico
+model1 = lm(yp~x+I(x^2)+I(x^3))
+model1 $ ajuste
+model1 $ coeff
+show(model1 $ coeff)
+library (ggplot2)
+ggplot(dados)+geom_point(aes(x =x, y =y),col='red')+geom_line(aes (x =x, y = model1 $ fit),col='blue')+ggtitle("P(x)=-0.002x^3 + 0.47x^2 + 3.06x + 11.11")   
+
+
+#Polinômio de grau 4
+#Gerando a função
+aux=c(x^4,x^3,x^2,x,x^0)
+library(corpcor)
+H=matrix(data=aux,nrow=Namostras,ncol=5)
+h_inversa<-pseudoinverse(H)
+ymatriz<-c(y)
+multi<-h_inversa %*% ymatriz
+w=c(multi)
+w2<-matrix(w)
+yp<-(w2[1,1]*x^4+w2[2,1]*x^3+w2[3,1]*x^2+w2[4,1]*x+w2[5,1]*x^0)
+#plotando o gráfico
+model1 = lm(yp~x+I(x^2)+I(x^3)+I(x^4))
+model1 $ ajuste
+model1 $ coeff
+show(model1 $ coeff)
+library (ggplot2)
+ggplot(dados)+geom_point(aes(x =x, y =y),col='red')+geom_line(aes (x =x, y = model1 $ fit),col='blue')+ggtitle("P(x)=2.86x^4 + 1.16x^3 + 4.48x^2 + 2.90x + 1.15")   
+
+
+#Polinômio de grau 5
+#Gerando a função
+aux=c(x^5,x^4,x^3,x^2,x,x^0)
+library(corpcor)
+H=matrix(data=aux,nrow=Namostras,ncol=6)
+h_inversa<-pseudoinverse(H)
+ymatriz<-c(y)
+multi<-h_inversa %*% ymatriz
+w=c(multi)
+w2<-matrix(w)
+yp<-(w2[1,1]*x^5+w2[2,1]*x^4+w2[3,1]*x^3+w2[4,1]*x^2+w2[5,1]*x+w2[6,1]*x^0)
+#plotando o gráfico
+model1 = lm(yp~x+I(x^2)+I(x^3)+I(x^4)+I(x^5))
+model1 $ ajuste
+model1 $ coeff
+show(model1 $ coeff)
+library (ggplot2)
+ggplot(dados)+geom_point(aes(x =x, y =y),col='red')+geom_line(aes (x =x, y = model1 $ fit),col='blue')  +ggtitle("P(x)=0.00004x^5 + 0.0008x^4 - 0.003x^3 + 0.4x^2 + 3.0x + 11.95") 
+
+
+#Polinômio de grau 6
+#Gerando a função
+aux=c(x^6,x^5,x^4,x^3,x^2,x,x^0)
+library(corpcor)
+H=matrix(data=aux,nrow=Namostras,ncol=7)
+h_inversa<-pseudoinverse(H)
+ymatriz<-c(y)
+multi<-h_inversa %*% ymatriz
+w=c(multi)
+w2<-matrix(w)
+yp<-(w2[1,1]*x^6+w2[2,1]*x^5+w2[3,1]*x^4+w2[4,1]*x^3+w2[5,1]*x^2+w2[6,1]*x+w2[7,1]*x^0)
+#plotando o gráfico
+model1 = lm(yp~x+I(x^2)+I(x^3)+I(x^4)+I(x^5)+I(x^6))
+model1 $ ajuste
+model1 $ coeff
+show(model1 $ coeff)
+library (ggplot2)
+ggplot(dados)+geom_point(aes(x =x, y =y),col='red')+geom_line(aes (x =x, y = model1 $ fit),col='blue')  +ggtitle("P(x)= -5.5x^6 - 4.8x^5 + 1.34x^4 + 7.21x^3 + 3.89x^2 + 2.8x + 1.2") 
+
+
+#Polinômio de grau 7
+#Gerando a função
+aux=c(x^7,x^6,x^5,x^4,x^3,x^2,x,x^0)
+library(corpcor)
+H=matrix(data=aux,nrow=Namostras,ncol=8)
+h_inversa<-pseudoinverse(H)
+ymatriz<-c(y)
+multi<-h_inversa %*% ymatriz
+w=c(multi)
+w2<-matrix(w)
+yp<-(w2[1,1]*x^7+w2[2,1]*x^6+w2[3,1]*x^5+w2[4,1]*x^4+w2[5,1]*x^3+w2[6,1]*x^2+w2[7,1]*x+w2[8,1]*x^0)
+#plotando o gráfico
+#plotando o gráfico
+model1 = lm(yp~x+I(x^2)+I(x^3)+I(x^4)+I(x^5)+I(x^6)+I(x^7))
+model1 $ ajuste
+model1 $ coeff
+show(model1 $ coeff)
+library (ggplot2)
+ggplot(dados)+geom_point(aes(x =x, y =y),col='red')+geom_line(aes (x =x, y = model1 $ fit),col='blue')+ggtitle("P(x)= 6.0x^7 + 7.07x^6 - 1.52x^5 - 1.5x^4 + 1.23x^3 + 1.33x^2 + 8.43x + 1.08")   
+
+
+#Polinômio de grau 8
+#Gerando a função
+aux=c(x^8,x^7,x^6,x^5,x^4,x^3,x^2,x,x^0)
+library(corpcor)
+H=matrix(data=aux,nrow=Namostras,ncol=9)
+h_inversa<-pseudoinverse(H)
+ymatriz<-c(y)
+multi<-h_inversa %*% ymatriz
+w=c(multi)
+w2<-matrix(w)
+yp<-(w2[1,1]*x^8+w2[2,1]*x^7+w2[3,1]*x^6+w2[4,1]*x^5+w2[5,1]*x^4+w2[6,1]*x^3+w2[7,1]*x^2+w2[8,1]*x+w2[9,1]*x^0)
+#plotando o gráfico
+model1 = lm(yp~x+I(x^2)+I(x^3)+I(x^4)+I(x^5)+I(x^6)+I(x^7)+I(x^8))
+model1 $ ajuste
+model1 $ coeff
+show(model1 $ coeff)
+library (ggplot2)
+ggplot(dados)+geom_point(aes(x =x, y =y),col='red')+geom_line(aes (x =x, y = model1 $ fit),col='blue')+ggtitle("P(x)=5.05x^8 + 1.4x^7 - 2.51x^6 - 1.5x^5 + 2.51x^4 + 1.49x^3 - 2.3x^2 + 8.71x + 4.24")   
+
+
