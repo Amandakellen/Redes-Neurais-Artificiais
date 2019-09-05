@@ -1,0 +1,111 @@
+rm(list=ls())
+N<-200
+treina_adaline<-function(x,y,b,alfa,maxepoca,tol)
+{
+  dime<-dim(x);
+  seq<-tol+1
+  epoca<-1
+  w1<-0.02
+  w2<-0.02
+ 
+  #maxepoca =numero de iterações
+  evec<-matrix(nrow=maxepoca,ncol=1)
+
+  while((epoca <=maxepoca)&&(seq>=tol))
+  {
+    for(i in 1:180)#encontrando novos w
+    {
+      #novo Y
+      yi<-x[i,1]*w1+x[i,2]*w2#+b
+      dif<-y[i,1]-yi
+      
+      #novo peso
+      w1<-w1+alfa*dif*x[i,1]
+      w2<-w2+alfa*dif*x[i,2]
+      #b=b+dif*alfa
+      
+    }
+    seq=(b/N)
+    
+    
+    evec[epoca]<-seq#erro atual
+    epoca=epoca+1#nepoca= numero de iterações
+  }
+  w<-c(w1,w2)
+  w<-matrix(data=w,nrow=2,ncol=1)
+  
+  retlist<-list(w,evec[1:epoca])
+  return(retlist)
+  
+}
+
+#função yadaline
+#yadaline <- function(xvec, w, par) {
+ # if(par==1) 
+  #  xvec <- cbind(1, xvec)
+  #u<-xvec %*% w
+  #y<-u
+  
+  #return(as.matrix(y))
+#}
+
+yadaline <- function(x, w, b) {
+ 
+y=w%*%x+b
+return(y)
+}
+
+#Gerando os dados
+x1<-matrix(0.4*rnorm(N)+2,ncol=2)
+x2<-matrix(0.4*rnorm(N)+4,ncol=2)
+plot(x1[,1],x1[,2],xlim=c(0,6),ylim=c(0,6),xlab='x1',ylab='x2',col='red')
+par(new=TRUE)
+plot(x2[,1],x2[,2],xlim=c(0,6),ylim=c(0,6),xlab='x1',ylab='x2',col='blue')
+
+
+#Dados para Treino:
+#x1_treino<-matrix(nrow=90,ncol=2)
+#x2_treino<-matrix(nrow=90,ncol=2)
+NTREINO<-90
+seqc1<-sample(N)#indice aleatorio para seleção de amostras
+x1_treino<-x1[1:90,]
+y1_treino<-matrix(1,nrow = NTREINO)
+
+seqc2<-sample(N)#indice aleatorio para seleção de amostras
+x2_treino<-x2[1:90,]
+y2_treino<-matrix(-1,nrow = NTREINO)
+
+#dados para teste
+x1_teste<-x1[90:100,]
+y1_teste<-matrix(1,nrow = (11))
+
+x2_teste<-x2[90:100,]
+
+y2_teste<-matrix(-1,nrow = (11))
+
+#concatenando os dados
+matriz1<-matrix(1,NTREINO)
+x_treino<-as.matrix(rbind(x1_treino,x2_treino))
+y_treino<-rbind(y1_treino,y2_treino)
+
+x_teste<-as.matrix(rbind(x1_teste,x2_teste))
+y_teste<-rbind(y1_teste,y2_teste)
+
+#treinamento Adaline
+tol=0.01
+alfa<-0.1
+bias=0.2
+maxepoca=400
+result1 <- treina_adaline(x_treino,y_treino,bias,alfa,maxepoca,tol)
+
+wt<-result1[1]
+wt=matrix(unlist(wt),nrow=2,ncol=1)
+erros<-result1[2]
+
+x_total<-as.matrix(rbind(x1,x2))
+
+#gerando os ys
+y<-yadaline(x_teste,wt,1)
+y<-x_teste%*%wt+bias
+erroteste<- (y_teste-y)^2/length(y)
+
