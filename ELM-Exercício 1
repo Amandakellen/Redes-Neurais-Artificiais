@@ -1,0 +1,104 @@
+
+rm(list=ls())
+N<-200
+#função de Treinamento
+treina_adaline<-function(x,y,b,alfa,maxepoca,tol)
+{
+  N<-180;
+  seq<-tol+1
+  epoca<-1
+  w1<-0.02
+  w2<-0.02
+  w3<-x[1,3]
+  b<-w3
+  #maxepoca =numero de iterações
+  evec<-matrix(nrow=maxepoca,ncol=1)
+  while((epoca <=maxepoca)&&(seq>=tol))
+  {
+    for(i in 1:N)#encontrando novos w
+    {
+      #novo Y
+      yi<-x[i,1]*w1+x[i,2]*w2+b
+      dif<-y[i,1]-yi
+      
+      #novo peso
+      w1<-w1+alfa*dif*x[i,1]
+      w2<-w2+alfa*dif*x[i,2]
+      w3<-w3+alfa*dif*x[i,3]
+      b=b+dif*alfa
+      
+    }
+    seq=(b/N)
+    
+    
+    evec[epoca]<-seq#erro atual
+    epoca=epoca+1#nepoca= numero de iterações
+  }
+  w<-c(w1,w2,b)
+  w<-matrix(data=w,nrow=3,ncol=1)
+  retlist<-list(w,evec[1:epoca])
+  return(retlist)
+  
+}
+#Gerando os dados
+x1<-matrix(0.4*rnorm(N)+2,ncol=2)
+x2<-matrix(0.4*rnorm(N)+4,ncol=2)
+plot(x1[,1],x1[,2],xlim=c(-1,6),ylim=c(-1,6),xlab='x1',ylab='x2',col='red')
+par(new=TRUE)
+plot(x2[,1],x2[,2],xlim=c(-1,6),ylim=c(-1,6),xlab='x1',ylab='x2',col='blue')
+
+#Gerando matriz de pesos aleatórios z
+z<-replicate(N,runif(3,-0.5,0.5))
+#Gearndo matriz para dados
+x3<-c(rep(1,200))
+x<-c(x1,x2,x3)
+x<-matrix(data=x,nrow=N,ncol=3)
+H<-x%*%z
+
+#separando os dados para treino
+ntreino<-180
+seqc1<-sample(200)
+x1total<-c(H[,1])
+x1total<-matrix(data=x1total,nrow=N,ncol=1)
+
+x2total<-c(H[,2])
+x2total<-matrix(data=x2total,nrow=N,ncol=1)
+
+x3total<-c(H[,3])
+x3total<-matrix(data=x3total,nrow=N,ncol=1)
+
+yp<-matrix(1,nrow=ntreino)
+yn<-matrix(-1,nrow=ntreino)
+
+ytreino<-rbind(yp,yn)
+x1treino<-x1total[seqc1[1:ntreino],]
+x2treino<-x2total[seqc1[1:ntreino],]
+x3treino<-x3total[seqc1[1:ntreino],]
+
+xtreino<-as.matrix(rbind(x1treino,x2treino,x3treino))
+xtreino<-matrix(data=xtreino,nrow=180,ncol=3)
+
+#Gerando dados para teste
+x1teste<-x1total[seqc1[(ntreino+1):N],]
+x2teste<-x2total[seqc1[(ntreino+1):N],] 
+x3teste<-x3total[seqc1[(ntreino+1):N],]
+yp<-matrix(1,nrow=N-ntreino)
+yn<-matrix(-1,nrow=N-ntreino)
+
+xteste<-as.matrix(rbind(x1teste,x2teste,x3teste))
+xteste<-matrix(data=xteste,nrow=,ncol=3)
+yteste<-rbind(yp,yn)
+
+#treinando os dados
+bias<-0.001
+alfa=0.01
+tol<-0.001
+maxepoca<-500
+result1 <- treina_adaline(xtreino,ytreino,bias,alfa,maxepoca,tol)
+wt<-result1[1]
+wt=matrix(unlist(wt),nrow=3,ncol=1)
+erros<-result1[2]
+
+y<-xteste%*%wt
+par(new=TRUE)
+plot(35-y,y,xlab='x1',ylab='x2',type="l")
